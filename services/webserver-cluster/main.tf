@@ -62,6 +62,15 @@ resource "aws_security_group_rule" "allow_http_inbound" {
   cidr_blocks = ["0.0.0.0/0"]
 }
 
+resource "aws_security_group_rule" "allow_http_test" {
+  type = "ingress"
+  security_group_id = "${aws_security_group.elb.id}"
+  from_port = 12000
+  to_port = 12000
+  protocol = "tcp"
+  cidr_blocks = ["0.0.0.0/0"]
+}
+
 resource "aws_security_group_rule" "allow_all_outbound" {
   type = "egress"
   security_group_id = "${aws_security_group.elb.id}"
