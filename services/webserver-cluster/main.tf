@@ -19,6 +19,7 @@ data "template_file" "user_data" {
     server_port = "${var.server_port}"
     db_address = "${data.terraform_remote_state.db.outputs.address}"
     db_port = "${data.terraform_remote_state.db.outputs.port}"
+    server_text = "${var.server_text}"
   }
 }
 
@@ -35,7 +36,7 @@ resource "aws_autoscaling_group" "example" {
 
   min_size = "${var.min_size}"
   max_size = "${var.max_size}"
-  min_elb_capacity = 2
+  min_elb_capacity = "${var.min_size}"
 
   tag {
     key = "Name"
@@ -51,6 +52,10 @@ resource "aws_autoscaling_group" "example" {
 
 resource "aws_security_group" "elb" {
   name = "${var.cluster_name}-elb"
+
+  lifecycle {
+    create_before_destroy = true
+  }
 }
 
 resource "aws_security_group_rule" "allow_http_inbound" {
@@ -99,6 +104,11 @@ resource "aws_elb" "example" {
     interval = 30
     target = "HTTP:${var.server_port}/"
   }
+
+  lifecycle {
+    create_before_destroy = true
+  }
+
 }
 
 resource "aws_security_group" "instance" {
@@ -117,7 +127,7 @@ resource "aws_security_group" "instance" {
 }
 
 resource "aws_launch_configuration" "example" {
-  image_id = "ami-07ebfd5b3428b6f4d"
+  image_id = "${var.ami}"
   instance_type = "${var.instance_type}"
   security_groups = ["${aws_security_group.instance.id}"]
   user_data = "${data.template_file.user_data.rendered}"
