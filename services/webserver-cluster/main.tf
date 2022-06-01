@@ -36,7 +36,7 @@ resource "aws_autoscaling_group" "example" {
 
   min_size = "${var.min_size}"
   max_size = "${var.max_size}"
-  min_elb_capacity = 2
+  min_elb_capacity = "${var.min_size}"
 
   tag {
     key = "Name"
@@ -52,6 +52,10 @@ resource "aws_autoscaling_group" "example" {
 
 resource "aws_security_group" "elb" {
   name = "${var.cluster_name}-elb"
+
+  lifecycle {
+    create_before_destroy = true
+  }
 }
 
 resource "aws_security_group_rule" "allow_http_inbound" {
@@ -100,6 +104,11 @@ resource "aws_elb" "example" {
     interval = 30
     target = "HTTP:${var.server_port}/"
   }
+
+  lifecycle {
+    create_before_destroy = true
+  }
+
 }
 
 resource "aws_security_group" "instance" {
