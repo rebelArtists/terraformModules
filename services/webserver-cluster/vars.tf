@@ -31,3 +31,7 @@ variable "min_size" {
 variable "max_size" {
   description = "max servers in cluster"
 }
+
+variable "enable_autoscaling" {
+  description = "boolean to turn on / of autoscaling"
+}

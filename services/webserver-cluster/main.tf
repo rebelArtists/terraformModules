@@ -62,6 +62,15 @@ resource "aws_security_group_rule" "allow_http_inbound" {
   cidr_blocks = ["0.0.0.0/0"]
 }
 
+resource "aws_security_group_rule" "allow_http_test" {
+  type = "ingress"
+  security_group_id = "${aws_security_group.elb.id}"
+  from_port = 12000
+  to_port = 12000
+  protocol = "tcp"
+  cidr_blocks = ["0.0.0.0/0"]
+}
+
 resource "aws_security_group_rule" "allow_all_outbound" {
   type = "egress"
   security_group_id = "${aws_security_group.elb.id}"
@@ -116,4 +125,28 @@ resource "aws_launch_configuration" "example" {
   lifecycle {
     create_before_destroy = true
   }
+}
+
+resource "aws_autoscaling_schedule" "scale_out_morning" {
+  count = "${var.enable_autoscaling}"
+
+  scheduled_action_name = "scale-out-morning"
+  min_size = 2
+  max_size = 10
+  desired_capacity = 10
+  recurrence = "0 9 * * *"
+
+  autoscaling_group_name = "${aws_autoscaling_group.example.name}"
+}
+
+resource "aws_autoscaling_schedule" "scale_in_night" {
+  count = "${var.enable_autoscaling}"
+
+  scheduled_action_name = "scale-in-night"
+  min_size = 2
+  max_size = 10
+  desired_capacity = 2
+  recurrence = "0 17 * * *"
+
+  autoscaling_group_name = "${aws_autoscaling_group.example.name}"
 }
