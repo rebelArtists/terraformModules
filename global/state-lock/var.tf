@@ -10,3 +10,8 @@ variable "state_bucket_name" {
 variable "state_file_key" {
   description = "state file key name in s3"
 }
+
+variable "aws_region" {
+  description = "aws region to use"
+  default = "us-east-1"
+}
