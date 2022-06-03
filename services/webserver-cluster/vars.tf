@@ -45,3 +45,7 @@ variable "ami" {
   description = "ami to run cluster with"
   default = "ami-07ebfd5b3428b6f4d"
 }
+
+variable "aws_region" {
+  description = "aws region to use"
+}
